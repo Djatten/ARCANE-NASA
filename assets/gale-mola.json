@@ -1,0 +1,17 @@
+{
+ "source": "NASA Mars Trek \u00b7 MGS MOLA DEM 463 m (8 bits)",
+ "lat": [
+  -3.4,
+  -7.4
+ ],
+ "lon": [
+  135.8,
+  139.8
+ ],
+ "size": [
+  256,
+  256
+ ],
+ "min": 31,
+ "max": 82
+}
