@@ -1,0 +1,10 @@
+# Cache de téléchargement de tools/build_data.py (régénérable)
+tools/.cache/
+# Modèle 3D NASA d'origine (11 Mo) : la version allégée est dans assets/models/
+assets/models/curiosity.glb
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+# Doublon : la page charge assets/models/rover-data.js
+assets/models/curiosity-light.glb

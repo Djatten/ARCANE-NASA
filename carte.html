@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARES NAV — Carte de sortie</title>
+<meta name="theme-color" content="#050505">
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/carte.css">
+</head>
+<body class="mode-habitat">
+
+<div id="map" aria-label="Carte de Mars"></div>
+
+<header class="top">
+  <a class="brand" href="index.html" title="Page de présentation"><span class="logo" aria-hidden="true"></span>ARES NAV</a>
+  <nav class="crumbs" aria-label="Échelle">
+    <button type="button" data-go="mars">Mars</button>
+    <button type="button" data-go="gale">Cratère Gale</button>
+    <button type="button" data-go="zone">Zone de sortie</button>
+  </nav>
+  <div class="search">
+    <input id="q" type="search" placeholder="Rechercher un lieu" autocomplete="off" aria-label="Rechercher un lieu">
+    <ul id="qres" class="card" hidden></ul>
+  </div>
+  <button type="button" class="demo-btn" id="demoBtn" title="Démo guidée (touche D)"><span aria-hidden="true">▶</span> Démo guidée</button>
+  <div class="mode" role="group" aria-label="Mode d'affichage">
+    <button type="button" data-mode="habitat" class="on">Habitat</button>
+    <button type="button" data-mode="casque">Casque</button>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Menu">
+  <button type="button" data-panel="lieux"><svg viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z M9 3v15 M15 6v15"/></svg><span>Carte</span></button>
+  <button type="button" data-panel="couches"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z M3 13l9 5 9-5"/></svg><span>Couches</span></button>
+  <button type="button" data-panel="itineraire"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h5"/></svg><span>Itinéraire</span></button>
+  <button type="button" data-panel="securite"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>Sécurité</span></button>
+  <button type="button" data-panel="science"><svg viewBox="0 0 24 24"><path d="M9 3h6 M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg><span>Science</span></button>
+  <button type="button" data-panel="assistant"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Assistant</span></button>
+</nav>
+
+<aside class="drawer card" id="drawer" hidden>
+  <div class="drawer-head"><h2 id="drawerTitle"></h2><button type="button" class="x" id="drawerClose" aria-label="Fermer le panneau">✕</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<section class="card summary" id="summary" aria-label="Bilan de la sortie"></section>
+
+<div class="views" id="views" aria-label="Vues de la carte"></div>
+<div class="legend card" id="legend" aria-label="Légende"></div>
+
+<div class="ctrls">
+  <button type="button" id="zIn" aria-label="Zoomer">+</button>
+  <button type="button" id="zOut" aria-label="Dézoomer">−</button>
+  <button type="button" id="myPos" aria-label="Ma position" title="Ma position (simulée)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v4 M12 18v4 M2 12h4 M18 12h4"/></svg></button>
+  <button type="button" id="toZone" aria-label="Zone de sortie" title="Zone de sortie"><svg viewBox="0 0 24 24"><path d="M4 9V4h5 M15 4h5v5 M20 15v5h-5 M9 20H4v-5"/></svg></button>
+</div>
+
+<footer class="status"><span id="coord">Survolez la carte</span><span id="viewSrc"></span></footer>
+
+<div class="hud" id="hud" hidden>
+  <div class="hud-alert" id="hudAlert" hidden></div>
+  <div class="hud-main">
+    <div class="hud-arrow" id="hudArrow"><svg viewBox="0 0 100 100"><path d="M50 6 L84 84 L50 64 L16 84Z"/></svg></div>
+    <div class="hud-dist" id="hudDist">—</div>
+    <div class="hud-next" id="hudNext">—</div>
+  </div>
+  <div class="hud-o2"><div class="hud-o2-bar"><i id="hudO2Fill"></i></div><b id="hudO2">—</b><span id="hudRet">—</span></div>
+  <p class="hud-ai" id="hudAi"></p>
+  <div class="hud-sim"><button type="button" id="simPlay">▶ Démarrer la sortie</button><span id="simClock">09:00</span><span class="chip sim">Simulé</span></div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<section class="demo card" id="demo" hidden aria-live="polite">
+  <span class="label" id="demoStep"></span>
+  <h3 id="demoTitle"></h3>
+  <p id="demoText"></p>
+  <div class="row">
+    <button type="button" class="btn" id="demoPrev">Précédent</button>
+    <button type="button" class="btn primary" id="demoNext">Suivant</button>
+    <button type="button" class="btn" id="demoQuit">Quitter</button>
+  </div>
+  <div class="demo-bar"><i id="demoBar"></i></div>
+</section>
+
+<div class="hint card" id="hint" hidden>
+  <p>Cliquez sur la carte pour inspecter un point, glissez les arrêts, survolez le trajet.</p>
+  <button type="button" class="btn primary" id="hintDemo">Lancer la démo guidée</button>
+  <button type="button" class="x" id="hintX" aria-label="Fermer l'astuce">✕</button>
+  <p class="keys">Raccourcis : <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> vues · <kbd>I</kbd> dangers IA · <kbd>V</kbd> vie · <kbd>C</kbd> casque · <kbd>D</kbd> démo</p>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="tiles/index.js"></script>
+<script src="data/zone.js"></script>
+<script src="js/zone-model.js"></script>
+<script src="js/carte.js"></script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARES NAV — La carte qui vous ramène à la base</title>
+<meta name="description" content="ARES NAV : la carte d'une sortie à pied sur Mars. Une IA détecte les dangers du terrain, cherche les traces de vie passée et guide l'équipage. NASA Space Apps 2026.">
+<meta name="theme-color" content="#050505">
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="nav-brand" href="#top" aria-label="ARES NAV, haut de page"><span class="nav-logo" aria-hidden="true"></span>ARES NAV</a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#rover">Rover</a>
+    <a href="#enjeux">Enjeux</a>
+    <a href="#ia">IA</a>
+    <a href="#couches">Couches</a>
+    <a href="#itineraire">Itinéraire</a>
+    <a href="#casque">Casque</a>
+    <a href="#donnees">Données</a>
+  </nav>
+  <a class="btn btn-sm" href="carte.html">Ouvrir la carte <span aria-hidden="true">→</span></a>
+</header>
+
+<main>
+<!-- ============ ACCUEIL : de la planète à la sortie ============ -->
+<section class="hero" id="top" aria-roledescription="carrousel" aria-label="De la planète à la zone de sortie">
+<div class="hero-pin">
+  <div class="hero-stars" id="heroStars" aria-hidden="true"></div>
+  <div class="hb on" data-k="0"><canvas id="heroGlobe" aria-hidden="true"></canvas><img class="hb-fallback" src="assets/hero/mars.webp" alt=""></div>
+  <div class="hb" data-k="1"><img src="assets/hero/gale.webp" alt="Le cratère Gale et le mont Sharp vus par la caméra CTX"></div>
+  <div class="hb" data-k="2"><img src="assets/hero/zone.webp" alt="La zone de sortie vue par la caméra HiRISE"></div>
+  <div class="hero-shade" aria-hidden="true"></div>
+
+  <div class="side side-l" id="sideL" aria-hidden="true"><img alt=""><span></span></div>
+  <div class="side side-r" id="sideR" aria-hidden="true"><img alt=""><span></span></div>
+
+  <div class="hero-head">
+    <p class="hero-index" aria-hidden="true"><span id="hIdx">01</span><i></i><span id="hKind">Planète</span><i></i><span>03</span></p>
+    <div class="hero-titlerow">
+            <h1 class="hero-title" id="hTitle" data-text="MARS" aria-live="polite">MARS</h1>
+          </div>
+    <p class="hero-sub" id="hSub">Planète rouge</p>
+    <p class="hero-tag">La carte qui vous ramène à la base.</p>
+  </div>
+
+  <a class="hero-cta" href="carte.html">Préparer la sortie</a>
+  <dl class="hero-stats wrap" id="hStats"></dl>
+  <div class="hero-dots" id="hDots" aria-hidden="true"></div>
+  <p class="hero-credit">Images réelles : NASA/JPL/USGS · Viking, MRO CTX, MRO HiRISE</p>
+  <a class="scroll-cue" href="#site" aria-label="Défiler vers la suite"><span></span></a>
+</div>
+</section>
+
+<!-- ============ 02 SITE ============ -->
+<section class="section" id="site">
+  <div class="wrap site-grid">
+    <div class="site-text">
+      <header class="sec-head reveal"><span class="sec-num">01</span><span class="sec-name">La mission de référence</span></header>
+      <h2 class="h2 reveal">Une sortie. Un site.<br><em>Au pied du mont Sharp.</em></h2>
+      <p class="reveal">La zone de sortie couvre 4,7 × 3,5 km entre les <strong>dunes Bagnold</strong> et la <strong>crête Vera Rubin</strong>, sur la route du rover Curiosity dans le cratère Gale.</p>
+      <dl class="hyp reveal">
+        <div><dt>Équipage</dt><dd>2 astronautes à pied</dd></div>
+        <div><dt>Durée</dt><dd>4 h de sortie</dd></div>
+        <div><dt>Vitesse</dt><dd>2 km/h en combinaison</dd></div>
+        <div><dt>Pente max.</dt><dd>20°</dd></div>
+      </dl>
+      <p class="note reveal">Hypothèses de l'équipe à valider, pas des chiffres NASA.</p>
+    </div>
+    <figure class="terrain-fig reveal">
+      <div class="terrain-box" id="terrainBox"><canvas id="terrain" aria-label="Relief du cratère Gale en courbes de niveau, vue isométrique"></canvas></div>
+      <figcaption class="mono">[ Relief réel · MGS MOLA ] · ≈ 240 × 240 km · relief exagéré</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 03 ROVER ============ -->
+<section class="rover" id="rover">
+  <div class="rover-pin">
+    <canvas id="roverCanvas" aria-label="Modèle 3D du rover Curiosity"></canvas>
+    <div class="rover-glow" aria-hidden="true"></div>
+    <div class="rover-ui wrap">
+      <div class="rover-text">
+        <header class="sec-head"><span class="sec-num">02</span><span class="sec-name">Le rover Curiosity</span></header>
+        <h2 class="h2">Douze ans de mesures<br><em>au sol de Gale.</em></h2>
+        <p class="lead">Les conditions de sortie d'ARES NAV viennent des instruments de Curiosity, sur place depuis 2012.</p>
+        <ol class="rover-steps" id="roverSteps">
+          <li><b>REMS</b><span>Station météo</span><p>Température, pression, vent et UV : les conditions types du panneau Sécurité.</p></li>
+          <li><b>RAD</b><span>Radiations</span><p>La dose reçue en surface, environ 0,64 mSv par jour.</p></li>
+          <li><b>Mastcam</b><span>Caméras couleur</span><p>Les vues au sol de chaque arrêt : « ce que vous verrez ».</p></li>
+          <li><b>ChemCam</b><span>Laser et spectromètre</span><p>La composition des roches jusqu'à 7 m : des cibles pour l'IA.</p></li>
+          <li><b>Navcam</b><span>Caméras de navigation</span><p>Le rover choisit lui-même son trajet en évitant les dangers. ARES NAV applique la même idée aux astronautes.</p></li>
+        </ol>
+      </div>
+      <dl class="rover-facts">
+        <div><dt>Sur Mars depuis</dt><dd>2012</dd></div>
+        <div><dt>Masse</dt><dd>899 kg</dd></div>
+        <div><dt>Longueur</dt><dd>3 m</dd></div>
+        <div><dt>Instruments</dt><dd>10</dd></div>
+      </dl>
+    </div>
+    <p class="rover-loading" id="roverLoading">Chargement du modèle 3D NASA…</p>
+    <p class="rover-credit">Modèle 3D : NASA/JPL-Caltech · glissez pour le faire tourner</p>
+  </div>
+</section>
+
+<!-- ============ 01 PROBLÈMES → SOLUTIONS ============ -->
+<section class="section" id="enjeux">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">03</span><span class="sec-name">Problèmes → solutions</span></header>
+    <div class="split">
+      <h2 class="h2 reveal">7 problèmes sur le terrain.<br><em>7 réponses dans ARES NAV.</em></h2>
+      <p class="lead reveal">Pas de GPS, une Terre trop loin pour aider, des dangers invisibles et quatre heures d'oxygène. ARES NAV répond à chacun.</p>
+    </div>
+    <ol class="ps" id="ps">
+      <li class="ps-row"><span class="ps-n">01</span>
+        <div class="ps-vis" data-v="gps" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>Aucun GPS</h3><p>Aucun satellite de navigation ne tourne autour de Mars.</p><b class="ps-stat">0 satellite</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>Se repérer sur les images d'orbite</h3><p>La carte s'appuie sur les images HiRISE à 30 cm par pixel ; la position est suivie le long du trajet prévu.</p><span class="ps-src">MRO · HiRISE</span></div></li>
+      <li class="ps-row"><span class="ps-n">02</span>
+        <div class="ps-vis" data-v="scale" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>Des cartes trop larges</h3><p>Les outils actuels montrent des régions entières, pas une sortie de quelques kilomètres.</p><b class="ps-stat">154 km → 5 km</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>Une carte à l'échelle de la marche</h3><p>Image, relief, thermique et minéraux superposés sur la zone de sortie de 4,7 × 3,5 km.</p><span class="ps-src">4 missions NASA</span></div></li>
+      <li class="ps-row"><span class="ps-n">03</span>
+        <div class="ps-vis" data-v="haz" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>Des dangers invisibles</h3><p>Dunes où l'on s'enfonce, pentes raides, champs de rochers : rien n'est signalé.</p><b class="ps-stat" id="psHaz">Zones à risque</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>L'IA détecte les dangers</h3><p>Un modèle classe chaque parcelle de 20 m en cinq types de terrain et signale les dangers avec un indice de confiance.</p><span class="ps-src">IA · apprentissage non supervisé</span></div></li>
+      <li class="ps-row"><span class="ps-n">04</span>
+        <div class="ps-vis" data-v="o2" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>De l'oxygène compté</h3><p>Une sortie de quatre heures ne pardonne aucune erreur de durée.</p><b class="ps-stat">4 h d'autonomie</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>Le trajet le plus sûr, minuté</h3><p>Le calcul contourne les dangers ; durée, marge et heure limite de retour sont recalculées à chaque arrêt ajouté.</p><span class="ps-src">Calcul A* · ARES NAV</span></div></li>
+      <li class="ps-row"><span class="ps-n">05</span>
+        <div class="ps-vis" data-v="earth" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>La Terre trop loin</h3><p>Un message met de 3 à 22 minutes pour arriver : pas d'aide en direct.</p><b class="ps-stat">3 à 22 min</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>Un assistant IA à bord</h3><p>Il répond à l'équipage à partir des données chargées, cite ses sources et fonctionne sans connexion.</p><span class="ps-src">Assistant ARES</span></div></li>
+      <li class="ps-row"><span class="ps-n">06</span>
+        <div class="ps-vis" data-v="hud" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>Une attention limitée</h3><p>En combinaison, les mains occupées, impossible de lire une carte chargée.</p><b class="ps-stat">Mains occupées</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>Un affichage casque épuré</h3><p>Flèche, distance, oxygène, alerte. Rien d'autre.</p><span class="ps-src">Mode casque</span></div></li>
+      <li class="ps-row"><span class="ps-n">07</span>
+        <div class="ps-vis" data-v="life" aria-hidden="true"></div>
+        <div class="ps-pb"><span class="ps-tag">Problème</span><h3>Où chercher la vie ?</h3><p>Les traces d'eau ancienne sont dispersées et invisibles à l'œil nu.</p><b class="ps-stat">≈ 3,6 milliards d'années</b></div>
+        <div class="ps-link" aria-hidden="true"><i></i></div>
+        <div class="ps-so"><span class="ps-tag">Solution</span><h3>L'IA propose des cibles</h3><p>Elle croise minéraux et types de roche pour classer les endroits où chercher des traces de vie passée.</p><span class="ps-src">IA · MRO CRISM</span></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 04 IA ============ -->
+<section class="section" id="ia">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">04</span><span class="sec-name">L'intelligence artificielle</span></header>
+    <div class="split">
+      <h2 class="h2 reveal">Une IA qui lit le terrain.<br><em>Et cherche la vie.</em></h2>
+      <p class="lead reveal">Les données de six instruments entrent d'un côté. De l'autre sortent les dangers, les cibles scientifiques, le trajet et le briefing.</p>
+    </div>
+    <figure class="pipeline reveal" id="pipelineFig">
+      <svg id="pipeline" role="img" aria-labelledby="pipeT"><title id="pipeT">Schéma : six sources de données NASA alimentent les modules d'IA d'ARES NAV, qui produisent l'écran habitat, le casque et le briefing</title></svg>
+    </figure>
+
+    <div class="ai-grid2">
+      <div class="panel compare reveal">
+        <div class="panel-bar">
+          <span class="mono">[ Ce que voit l'IA ]</span>
+          <div class="seg" role="group" aria-label="Couche de l'IA">
+            <button type="button" data-ai="cls" class="on">Dangers</button>
+            <button type="button" data-ai="life">Potentiel de vie</button>
+          </div>
+        </div>
+        <div class="compare-box" id="compareBox">
+          <canvas id="aiCompare" aria-label="Comparaison de l'image HiRISE et du classement du terrain par l'IA"></canvas>
+          <div class="compare-handle" id="compareHandle" role="slider" tabindex="0" aria-label="Curseur de comparaison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span></span></div>
+          <span class="compare-lab l">Image HiRISE</span><span class="compare-lab r">Vue de l'IA</span>
+        </div>
+        <div class="ai-legend mono" id="aiLegend"></div>
+      </div>
+      <div class="ai-cards">
+        <article class="ai-card reveal"><span class="ai-k">Détection des dangers</span><b id="aiHaz">—</b><p id="aiHazTxt"></p></article>
+        <article class="ai-card reveal"><span class="ai-k">Potentiel de vie <i class="chip-sim">Simulé</i></span><b id="aiLife">—</b><p id="aiLifeTxt"></p></article>
+        <article class="ai-card reveal"><span class="ai-k">Itinéraire</span><b id="aiRoute">—</b><p id="aiRouteTxt"></p></article>
+      </div>
+    </div>
+    <p class="note">Le classement du terrain est un vrai modèle d'apprentissage non supervisé (k-moyennes) entraîné sur la zone : luminosité et texture HiRISE, pente du modèle de terrain. Le potentiel de vie est un score simulé qui pondère minéraux et types de roche.</p>
+  </div>
+</section>
+
+<!-- ============ 05 COUCHES ============ -->
+<section class="section" id="couches">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">05</span><span class="sec-name">Les couches</span></header>
+    <div class="split">
+      <h2 class="h2 reveal">Quatre missions NASA.<br><em>Un seul endroit.</em></h2>
+      <p class="lead reveal">Image, relief, thermique, minéraux, puis la lecture de l'IA et le trajet : chaque couche répond à une question de l'équipage.</p>
+    </div>
+    <div class="layers-grid">
+      <div class="stack-wrap" id="stackWrap"><div class="stack" id="stack"></div></div>
+      <ol class="layer-list" id="layerList"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 ITINÉRAIRE ET SÉCURITÉ ============ -->
+<section class="section" id="itineraire">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">06</span><span class="sec-name">Itinéraire et sécurité</span></header>
+    <div class="split">
+      <h2 class="h2 reveal">Le trajet le plus sûr.<br><em>Pas le plus court.</em></h2>
+      <p class="lead reveal">L'équipage choisit ses arrêts. ARES NAV les relie sur le vrai terrain en évitant les dangers détectés par l'IA, puis calcule la durée, la marge d'oxygène et l'heure limite de retour.</p>
+    </div>
+    <div class="route-grid">
+      <figure class="panel route-panel reveal">
+        <div class="panel-bar">
+          <span class="mono">[ Zone de sortie · HiRISE ]</span>
+          <div class="seg" role="group" aria-label="Trajets affichés">
+            <button type="button" data-show="safe">Plus sûr</button>
+            <button type="button" data-show="short">Plus court</button>
+            <button type="button" data-show="both" class="on">Comparer</button>
+          </div>
+        </div>
+        <canvas id="routeMap" aria-label="Image HiRISE de la zone de sortie : trajet sûr et trajet le plus court"></canvas>
+        <figcaption class="legend">
+          <span><i class="lg-safe"></i>Trajet sûr</span>
+          <span><i class="lg-short"></i>Plus court</span>
+          <span><i class="lg-sand"></i>Sable (IA)</span>
+          <span><i class="lg-rock"></i>Roche rugueuse (IA)</span>
+          <span><i class="lg-block"></i>Pente raide (IA)</span>
+        </figcaption>
+      </figure>
+      <div class="panel dash reveal">
+        <div class="dash-top">
+          <h3 class="lcd">Bilan<br>de sortie</h3>
+          <ul class="brackets brackets-sm" id="dashStats"></ul>
+        </div>
+        <div class="dash-chart">
+          <div class="dash-bar"><span>Profil d'altitude</span><span class="chip">Trajet : sûr</span></div>
+          <div class="dash-legend mono" id="profileLegend"></div>
+          <canvas id="profile" aria-label="Profil d'altitude du trajet sûr"></canvas>
+          <div class="dash-axis mono" id="profileAxis"></div>
+        </div>
+      </div>
+    </div>
+    <div class="safety">
+      <div class="panel o2 reveal">
+        <div class="panel-bar"><span class="mono">[ Autonomie ]</span><span class="chip-sim">Simulé</span></div>
+        <div class="gauge" id="o2Gauge"><div class="gauge-fill"></div><div class="gauge-limit"></div></div>
+        <dl class="o2-grid" id="o2Stats"></dl>
+      </div>
+      <div class="alert reveal" role="note" id="alertBox"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 CASQUE ============ -->
+<section class="section" id="casque">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">07</span><span class="sec-name">Deux affichages</span></header>
+    <div class="info-head">
+      <h2 class="display reveal">Habitat &amp; casque</h2>
+      <div class="info-cols reveal">
+        <div><span class="mono">Habitat</span><p>Grand écran, avant et pendant la sortie : planifier, comparer, suivre.</p></div>
+        <div><span class="mono">Casque</span><p>Mains occupées, attention limitée : quatre éléments au plus, lisibles en un coup d'œil.</p></div>
+      </div>
+    </div>
+    <figure class="hud-fig reveal">
+      <svg viewBox="0 0 1000 520" class="hud" role="img" aria-labelledby="hudT">
+        <title id="hudT">Affichage tête haute du casque : cap vers l'arrêt 2, oxygène, alerte et une ligne de l'assistant</title>
+        <defs><linearGradient id="visor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity=".12"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient></defs>
+        <path class="visor" d="M170 120 Q500 30 830 120 Q900 260 830 400 Q500 470 170 400 Q100 260 170 120Z" fill="url(#visor)"/>
+        <g class="hud-el" transform="translate(600 235)">
+          <path d="M0 -62 L42 18 L0 0 L-42 18Z" class="hud-arrow"/>
+          <text y="62" class="hud-big" text-anchor="middle" id="hudDist">400 m</text>
+          <text y="88" class="hud-small" text-anchor="middle" id="hudNext">ARRÊT 2</text>
+        </g>
+        <g class="hud-el" transform="translate(215 180)">
+          <rect x="0" y="0" width="14" height="150" rx="3" class="hud-track"/>
+          <rect x="0" y="40" width="14" height="110" rx="3" class="hud-o2" id="hudO2Bar"/>
+          <text x="30" y="80" class="hud-mid" id="hudO2">O₂</text>
+          <text x="30" y="104" class="hud-small" id="hudRet">RETOUR AVANT 13:00</text>
+        </g>
+        <g class="hud-el" transform="translate(500 120)">
+          <rect x="-225" y="-26" width="450" height="40" rx="20" class="hud-alert"/>
+          <path d="M-204 2 L-192 -18 L-180 2Z" class="hud-alert-ico"/>
+          <text x="18" y="0" class="hud-alert-txt" text-anchor="middle" id="hudAlert">ALERTE</text>
+        </g>
+        <g class="hud-el" transform="translate(500 380)"><text class="hud-ai" text-anchor="middle" id="hudAi"></text></g>
+        <g class="callouts">
+          <path d="M650 232 L940 232"/><text x="912" y="220">01</text>
+          <path d="M210 255 L60 255"/><text x="60" y="243">02</text>
+          <path d="M727 108 L800 60 L940 60"/><text x="912" y="48">03</text>
+          <path d="M800 372 L870 480 L940 480"/><text x="912" y="468">04</text>
+        </g>
+      </svg>
+      <figcaption class="chip-sim">Simulé</figcaption>
+    </figure>
+    <ol class="hud-legend reveal">
+      <li><span>01</span><b>Cap et distance</b><small>Flèche vers le prochain arrêt</small></li>
+      <li><span>02</span><b>Oxygène</b><small>Jauge et heure limite de retour</small></li>
+      <li><span>03</span><b>Alerte</b><small>Danger détecté par l'IA, devant vous</small></li>
+      <li><span>04</span><b>Assistant</b><small>Une seule ligne, en gros caractères</small></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 08 ASSISTANT ============ -->
+<section class="section" id="assistant">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">08</span><span class="sec-name">L'assistant IA</span></header>
+    <div class="split">
+      <h2 class="h2 reveal">Il explique. Il ne calcule pas.<br><em>Il n'invente pas.</em></h2>
+      <p class="lead reveal">L'application calcule les faits : trajet, dangers, autonomie. L'assistant les met en mots et cite la mission d'origine. S'il n'a pas l'information, il le dit.</p>
+    </div>
+    <div class="ai-grid">
+      <div class="panel chat reveal" id="chat">
+        <div class="panel-bar"><span class="mono">[ Assistant · mode habitat ]</span><span class="chip-ai">Hors ligne</span></div>
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="chat-sugg" id="chatSugg" aria-label="Questions suggérées"></div>
+      </div>
+      <ul class="guards reveal">
+        <li>Répond seulement à partir des faits fournis.</li>
+        <li>Oxygène, durée et dose viennent du code, jamais du modèle.</li>
+        <li>Chaque réponse cite la mission et l'instrument.</li>
+        <li>Sans connexion : briefing et explications préparés à l'avance.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 DONNÉES ============ -->
+<section class="section" id="donnees">
+  <div class="wrap">
+    <header class="sec-head reveal"><span class="sec-num">09</span><span class="sec-name">Les données NASA</span></header>
+    <div class="data-head">
+      <p class="big-num reveal"><b data-count="6">6</b><span>types de données</span></p>
+      <p class="big-num reveal"><b data-count="4">4</b><span>missions NASA</span></p>
+      <p class="big-num reveal"><b data-count="1">1</b><span>modèle d'IA du terrain</span></p>
+    </div>
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead><tr><th>Type</th><th>Mission · instrument</th><th>Ce que ça apporte</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td>Optique</td><td>Mars Reconnaissance Orbiter · HiRISE, CTX</td><td>Image détaillée du sol, entrée de l'IA</td><td>Vue satellite, IA</td></tr>
+          <tr><td>Topographie</td><td>Mars Global Surveyor · MOLA ; terrain HiRISE</td><td>Altitude et pentes, base de l'itinéraire</td><td>Vue relief, IA</td></tr>
+          <tr><td>Thermique</td><td>Mars Odyssey · THEMIS</td><td>Sable meuble ou roche dure</td><td>Vue thermique</td></tr>
+          <tr><td>Spectral</td><td>Mars Reconnaissance Orbiter · CRISM</td><td>Minéraux formés avec de l'eau</td><td>Potentiel de vie</td></tr>
+          <tr><td>Atmosphère</td><td>Curiosity · REMS</td><td>Température, pression, vent, UV au sol</td><td>Sécurité</td></tr>
+          <tr><td>Radiation</td><td>Curiosity · RAD</td><td>Dose reçue en surface</td><td>Sécurité</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Tuiles et modèle de terrain : NASA Mars Trek. Modèle 3D : NASA/JPL-Caltech. Tout est embarqué : la carte fonctionne sans connexion.</p>
+  </div>
+</section>
+
+<section class="outro">
+  <div class="wrap">
+    <p class="eyebrow">[ ARES NAV ]</p>
+    <h2 class="outro-title">La carte qui vous ramène à la base.</h2>
+    <a class="btn btn-lg" href="carte.html">Préparer la sortie <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span>NASA Space Apps Challenge 2026 · défi « Interplanetary Survival Guide: Martian Map »</span>
+    <span>Prototype de hackathon · les valeurs simulées sont signalées</span>
+  </div>
+</footer>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="vendor/gsap/gsap.min.js"></script>
+<script src="vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="assets/nasa-data.js"></script>
+<script src="data/zone.js"></script>
+<script src="js/zone-model.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARES NAV — Guide de survie interplanétaire</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="globe"></canvas>
+
+<header class="brand">
+  <div class="logo">◉</div>
+  <div>
+    <h1>ARES NAV</h1>
+    <p>Guide de survie interplanétaire · Carte de Mars</p>
+  </div>
+</header>
+
+<aside class="panel left">
+  <section>
+    <h2>Couches</h2>
+    <label class="layer"><input type="checkbox" data-layer="sites" checked><span class="dot" style="--c:#ffd27a"></span>Missions et base</label>
+    <label class="layer"><input type="checkbox" data-layer="relief" checked><span class="dot" style="--c:#ff4d3d"></span>Relief dangereux</label>
+    <label class="layer"><input type="checkbox" data-layer="storm" checked><span class="dot" style="--c:#ff9b3d"></span>Tempêtes de poussière</label>
+    <label class="layer"><input type="checkbox" data-layer="ice" checked><span class="dot" style="--c:#5cc8ff"></span>Glace d'eau</label>
+    <label class="layer"><input type="checkbox" data-layer="labels" checked><span class="dot" style="--c:#ffffff"></span>Étiquettes</label>
+  </section>
+
+  <section>
+    <h2>Itinéraire</h2>
+    <div class="field">
+      <span>Départ</span>
+      <select id="selStart"></select>
+      <button class="pick" id="pickStart" title="Choisir sur le globe">⌖</button>
+    </div>
+    <div class="field">
+      <span>Arrivée</span>
+      <select id="selEnd"></select>
+      <button class="pick" id="pickEnd" title="Choisir sur le globe">⌖</button>
+    </div>
+    <div class="field slider">
+      <span>Vitesse</span>
+      <input type="range" id="speed" min="1" max="30" value="10">
+      <b id="speedVal">10 km/h</b>
+    </div>
+    <div class="field slider">
+      <span>Conduite</span>
+      <input type="range" id="hours" min="2" max="12" value="6">
+      <b id="hoursVal">6 h/sol</b>
+    </div>
+    <div class="actions">
+      <button id="btnRoute" class="primary">Calculer</button>
+      <button id="btnSim">▶ Simuler</button>
+    </div>
+    <p class="hint" id="pickHint"></p>
+  </section>
+
+  <section id="result" hidden>
+    <h2>Résultat</h2>
+    <div class="stats">
+      <div><b id="rDist">—</b><span>distance</span></div>
+      <div><b id="rSols">—</b><span>sols de trajet</span></div>
+      <div><b id="rRisk">—</b><span>risque</span></div>
+    </div>
+    <div id="rNotes" class="notes"></div>
+  </section>
+</aside>
+
+<aside class="panel right" id="info">
+  <canvas id="preview" width="520" height="340"></canvas>
+  <div class="info-body">
+    <div class="tag" id="iTag"></div>
+    <h3 id="iName"></h3>
+    <p class="place" id="iPlace"></p>
+    <p id="iText"></p>
+    <div class="info-actions">
+      <button id="iFrom">Partir d'ici</button>
+      <button id="iTo">Aller ici</button>
+    </div>
+  </div>
+</aside>
+
+<footer class="status">
+  <span id="coords">Survolez la planète</span>
+  <span id="texSrc"></span>
+</footer>
+
+<script src="../../vendor/three.min.js"></script>
+<script src="../../vendor/OrbitControls.js"></script>
+<script src="js/data.js"></script>
+<script src="js/models.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
