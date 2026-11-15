@@ -341,6 +341,7 @@ strong { color: var(--ink); font-weight: 600; }
 .hud-small { fill: var(--ink2); font: 500 14px var(--f-mono); letter-spacing: .08em; }
 .hud-track { fill: rgba(255, 255, 255, .12); }
 .hud-o2 { fill: var(--safe); }
+.hud-energy { fill: var(--blue); }
 .hud-alert { fill: rgba(255, 68, 51, .2); stroke: var(--danger); stroke-width: 1.5; }
 .hud-alert-ico { fill: var(--danger); }
 .hud-alert-txt { fill: var(--ink); font: 700 15px var(--f-mono); letter-spacing: .04em; }

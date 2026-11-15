@@ -33,15 +33,16 @@ Toutes les images et le relief viennent de NASA Mars Trek :
 - Sécurité : alertes, autonomie en oxygène, heure limite de retour, conditions types (Curiosity REMS et RAD).
 - Science : fiche de chaque arrêt (objectif, mesures, matériel).
 - Clic sur la carte : altitude, pente, sol, unité, et synthèse par l'assistant.
-- Mode casque : flèche, distance, oxygène, alerte et une ligne de l'assistant ; simulation de la sortie (position simulée).
+- Mode casque : flèche, distance, jauges O₂/énergie, alerte terrain à venir, conseil du copilote et lecture vocale locale ; la position est simulée sur le trajet.
 - Assistant hors ligne : réponses rédigées à partir des faits calculés, sources citées et cliquables.
   Le relais vers un vrai modèle de langage (clé côté serveur) reste à brancher.
 
 ## Ce qui est réel, calculé ou simulé
 - Réel : toutes les images, le relief, la thermique, les noms de lieux.
 - Calculé par le code (jamais par l'IA) : pentes, sable, trajets, durées, marge d'oxygène.
-- Simulé ou supposé : position de l'astronaute, habitat Alpha (fictif), hypothèses de l'équipe
-  (2 astronautes, 4 h, 2 km/h, pente max 20°, 15 min par arrêt), contours des minéraux.
+- Simulé ou supposé : position de l'astronaute, alertes rejouées depuis le modèle de terrain (aucune caméra/capteur en direct),
+  batterie de démonstration (5 h, à remplacer par le profil réel du scaphandre), habitat Alpha (fictif), hypothèses de l'équipe
+  (2 astronautes, 4 h d'oxygène, 2 km/h, pente max 20°, 15 min par arrêt), contours des minéraux.
 - Limite connue : le MNT HiRISE de Mars Trek est fourni en 8 bits (un niveau = 18,5 m). Les altitudes sont étalonnées
   sur MOLA (régression r = 0,999) et les pentes reconstruites entre courbes de niveau : les petits obstacles n'y figurent pas.
 

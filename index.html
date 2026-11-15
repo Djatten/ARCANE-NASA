@@ -268,12 +268,12 @@
       <h2 class="display reveal">Habitat &amp; casque</h2>
       <div class="info-cols reveal">
         <div><span class="mono">Habitat</span><p>Grand écran, avant et pendant la sortie : planifier, comparer, suivre.</p></div>
-        <div><span class="mono">Casque</span><p>Mains occupées, attention limitée : quatre éléments au plus, lisibles en un coup d'œil.</p></div>
+        <div><span class="mono">Casque</span><p>Mains occupées, attention limitée : cap, réserves O₂/énergie, alerte terrain et conseil du copilote, lisibles d'un coup d'œil.</p></div>
       </div>
     </div>
     <figure class="hud-fig reveal">
       <svg viewBox="0 0 1000 520" class="hud" role="img" aria-labelledby="hudT">
-        <title id="hudT">Affichage tête haute du casque : cap vers l'arrêt 2, oxygène, alerte et une ligne de l'assistant</title>
+        <title id="hudT">Affichage tête haute du casque : cap, oxygène, énergie, alerte terrain et conseil du copilote</title>
         <defs><linearGradient id="visor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity=".12"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient></defs>
         <path class="visor" d="M170 120 Q500 30 830 120 Q900 260 830 400 Q500 470 170 400 Q100 260 170 120Z" fill="url(#visor)"/>
         <g class="hud-el" transform="translate(600 235)">
@@ -286,6 +286,10 @@
           <rect x="0" y="40" width="14" height="110" rx="3" class="hud-o2" id="hudO2Bar"/>
           <text x="30" y="80" class="hud-mid" id="hudO2">O₂</text>
           <text x="30" y="104" class="hud-small" id="hudRet">RETOUR AVANT 13:00</text>
+          <rect x="150" y="0" width="14" height="150" rx="3" class="hud-track"/>
+          <rect x="150" y="30" width="14" height="120" rx="3" class="hud-energy"/>
+          <text x="178" y="70" class="hud-small">ÉNERGIE</text>
+          <text x="178" y="98" class="hud-small">80 % · SIMULÉE</text>
         </g>
         <g class="hud-el" transform="translate(500 120)">
           <rect x="-225" y="-26" width="450" height="40" rx="20" class="hud-alert"/>
@@ -304,8 +308,8 @@
     </figure>
     <ol class="hud-legend reveal">
       <li><span>01</span><b>Cap et distance</b><small>Flèche vers le prochain arrêt</small></li>
-      <li><span>02</span><b>Oxygène</b><small>Jauge et heure limite de retour</small></li>
-      <li><span>03</span><b>Alerte</b><small>Danger détecté par l'IA, devant vous</small></li>
+      <li><span>02</span><b>O₂ &amp; énergie</b><small>Autonomie et marge de retour simulées</small></li>
+      <li><span>03</span><b>Alerte</b><small>Danger calculé à partir du terrain devant vous</small></li>
       <li><span>04</span><b>Assistant</b><small>Une seule ligne, en gros caractères</small></li>
     </ol>
   </div>

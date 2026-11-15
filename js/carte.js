@@ -370,10 +370,17 @@
     const { st, a, lat, lon } = placeMe();
     const ph = st.ph, n = stops.length;
     const remainO2 = Math.max(0, H.budgetMin - sim.t), pct = remainO2 / H.budgetMin;
+    const remainPower = Math.max(0, H.powerBudgetMin - sim.t), powerPct = remainPower / H.powerBudgetMin;
     $('#hudO2').textContent = 'O₂ ' + nf(pct * 100) + ' %';
+    $('#hudO2Track').setAttribute('aria-valuenow', String(Math.round(pct * 100)));
     $('#hudO2Fill').style.width = (pct * 100).toFixed(1) + '%';
     $('#hudO2Fill').style.background = pct > 0.4 ? COL.safe : pct > 0.2 ? COL.o : COL.r;
-    $('#hudRet').textContent = 'Retour avant ' + clock(H.budgetMin);
+    $('#hudRet').textContent = 'Retour avant ' + clock(H.budgetMin) + ' · ' + hm(remainO2) + ' O₂';
+    $('#hudPower').textContent = 'Énergie ' + nf(powerPct * 100) + ' %';
+    $('#hudPowerTrack').setAttribute('aria-valuenow', String(Math.round(powerPct * 100)));
+    $('#hudPowerFill').style.width = (powerPct * 100).toFixed(1) + '%';
+    $('#hudPowerFill').style.background = powerPct > 0.4 ? COL.blue : powerPct > 0.2 ? COL.o : COL.r;
+    $('#hudPowerTime').textContent = 'Réserve estimée · ' + hm(remainPower);
     $('#simClock').textContent = clock(sim.t);
     const target = stops[sim.next] || stops[0];
     const [tx, ty] = M.toXY(target.lon, target.lat);
@@ -393,13 +400,14 @@
       $('#hudDist').textContent = 'Arrêt ' + ph.at; $('#hudNext').textContent = 'Mesures · encore ' + nf(Math.ceil(ph.t1 - sim.t)) + ' min';
       line = s.tasks ? s.tasks[0] + '.' : 'Faites vos mesures, puis reprenez le trajet.';
     }
-    $('#hudAi').textContent = '« ' + line + ' »';
-    // Alerte : regard 120 m devant sur le trajet
+    // Contrôle simulé des cellules terrain situées devant la position.
     let al = null;
     if (!st.done && ph.type === 'walk') {
       for (let d = 10; d <= 120 && !al; d += 10) {
         const p = M.along(plan.safePts, st.d + d), k = M.cellOf(p.x, p.y);
-        if (M.slope[k] > 15 || M.cls[k] === 4) al = ['bad', 'Pente ' + nf(M.slope[k]) + '° dans ' + d + ' m'];
+        if (M.slope[k] > H.maxSlope) al = ['bad', 'Pente interdite (' + nf(M.slope[k]) + '°) dans ' + d + ' m'];
+        else if (M.slope[k] >= 15) al = ['warn', 'Terrain raide (' + nf(M.slope[k]) + '°) dans ' + d + ' m · ralentissez'];
+        else if (M.cls[k] === 4) al = ['warn', 'Pente raide détectée dans ' + d + ' m · ralentissez'];
         else if (M.cls[k] === 1) al = ['warn', 'Dunes dans ' + d + ' m · restez sur le tracé'];
         else if (M.cls[k] === 2 && d <= 40) al = ['warn', 'Rochers dans ' + d + ' m · ralentissez'];
       }
@@ -407,6 +415,8 @@
     if (!al && plan.marginMin < 20) al = ['warn', 'Marge faible : ' + nf(plan.marginMin) + ' min'];
     const box = $('#hudAlert');
     box.hidden = !al; if (al) { box.className = 'hud-alert' + (al[0] === 'warn' ? ' warn' : ''); box.textContent = al[1]; }
+    if (al) line += ' ' + al[1] + '. ' + (al[0] === 'bad' ? 'Arrêtez-vous et attendez un itinéraire sûr.' : 'Ralentissez et suivez le tracé validé.');
+    $('#hudAi').textContent = '« ' + line + ' »';
     return { lat, lon };
   }
 
@@ -744,6 +754,18 @@
   }));
   $$('.mode button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
   $('#simPlay').addEventListener('click', simToggle);
+  const hudSpeak = $('#hudSpeak');
+  if (!window.speechSynthesis || typeof window.SpeechSynthesisUtterance !== 'function') {
+    hudSpeak.disabled = true;
+    hudSpeak.title = 'Synthèse vocale indisponible dans ce navigateur.';
+  } else {
+    hudSpeak.addEventListener('click', () => {
+      window.speechSynthesis.cancel();
+      const utterance = new window.SpeechSynthesisUtterance($('#hudAi').textContent.replace(/[«»]/g, '').trim());
+      utterance.lang = 'fr-FR';
+      window.speechSynthesis.speak(utterance);
+    });
+  }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { if (demo.on) demoStop(); else if (adding) setAdding(false); else if (panel) closePanel(); return; }
     if (/input|textarea|select/i.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
