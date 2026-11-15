@@ -852,9 +852,81 @@
     if (G && ST && !REDUCE) $$('.ps-vis').forEach((el) => G.from(el, { scale: 0.7, opacity: 0, rotate: -6, duration: 0.9, ease: 'back.out(1.6)', scrollTrigger: { trigger: el, start: 'top 85%' } }));
   }
 
+  // =====================================================================
+  // Casque ARES en 3D (d'après la planche technique) : rotation à la souris, vue éclatée au scroll
+  // =====================================================================
+  function helmet3d() {
+    const cv = $('#helmet3d');
+    if (!cv || !window.THREE) return;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); } catch (e) { return; }
+    renderer.setPixelRatio(DPR()); renderer.outputEncoding = THREE.sRGBEncoding;
+    const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(32, 4 / 3, 0.1, 50);
+    cam.position.set(0, 0.3, 7); cam.lookAt(0, -0.05, 0);
+    scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x1a0c06, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(3, 4, 5); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xff6a2a, 1.4); rim.position.set(-4, 1, -3); scene.add(rim);
+    const root = new THREE.Group(); scene.add(root);
+    const shellM = new THREE.MeshStandardMaterial({ color: 0x1c1d20, roughness: 0.45, metalness: 0.6, flatShading: true });
+    const plateM = new THREE.MeshStandardMaterial({ color: 0x2a2c31, roughness: 0.5, metalness: 0.5, flatShading: true });
+    const glassM = new THREE.MeshStandardMaterial({ color: 0x220c04, roughness: 0.08, metalness: 0.9, emissive: 0xff5a1f, emissiveIntensity: 0.12, transparent: true, opacity: 0.92, side: THREE.DoubleSide });
+    const glowM = new THREE.MeshBasicMaterial({ color: 0x9ff3ff });
+    const lineM = new THREE.LineBasicMaterial({ color: 0x9ff3ff, transparent: true, opacity: 0.55 });
+    const parts = [];
+    function part(geo, mat, pos, rot, dir) {
+      const g = new THREE.Group(), m = new THREE.Mesh(geo, mat);
+      g.add(m); g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), lineM));
+      g.position.copy(pos); if (rot) g.rotation.set(rot[0], rot[1], rot[2]);
+      g.userData = { base: pos.clone(), dir: new THREE.Vector3(...dir) };
+      root.add(g); parts.push(g); return g;
+    }
+    const V = (x, y, z) => new THREE.Vector3(x, y, z);
+    // Coque : calotte facettée (dessus et arrière), ouverte devant pour la visière
+    part(new THREE.SphereGeometry(1, 14, 10, Math.PI * 0.62, Math.PI * 1.76, 0, Math.PI * 0.78), shellM, V(0, 0.05, 0), [0, 0, 0], [0, 0.15, -0.9]).scale.set(0.92, 1.04, 1.08);
+    // Plaque de crête (comme sur la planche, vue de dessus)
+    part(new THREE.CylinderGeometry(1.06, 1.06, 0.42, 14, 1, true, -0.21, 0.42), plateM, V(0, 0.05, 0), [0, 0, Math.PI / 2], [0, 1, 0]).scale.set(1.04, 1, 1.1);
+    // Visière
+    part(new THREE.SphereGeometry(1.03, 20, 12, Math.PI * 0.18, Math.PI * 0.64, Math.PI * 0.3, Math.PI * 0.32), glassM, V(0, 0.02, 0.02), [0, 0, 0], [0, 0, 1.1]).scale.set(0.93, 1, 1.09);
+    // Mentonnière hexagonale
+    const chin = new THREE.Shape([[-0.42, 0], [0.42, 0], [0.55, -0.32], [0.3, -0.62], [-0.3, -0.62], [-0.55, -0.32]].map(([x, y]) => new THREE.Vector2(x, y)));
+    part(new THREE.ExtrudeGeometry(chin, { depth: 0.22, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.03, bevelSegments: 1 }), plateM, V(0, -0.38, 0.72), [-0.25, 0, 0], [0, -0.6, 1]);
+    // Capteur frontal (A)
+    const sens = part(new THREE.TorusGeometry(0.15, 0.04, 8, 24), plateM, V(0, 0.78, 0.72), [-0.75, 0, 0], [0, 0.6, 0.9]);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.09, 20), glowM); lens.position.z = 0.01; sens.add(lens);
+    // Modules latéraux (B)
+    [-1, 1].forEach((sx) => {
+      const pod = part(new THREE.CylinderGeometry(0.24, 0.27, 0.16, 16), plateM, V(sx * 0.96, 0.1, -0.05), [0, 0, Math.PI / 2], [sx * 1.2, 0, 0]);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.025, 6, 24), glowM); ring.rotation.y = Math.PI / 2; ring.position.y = sx * 0.09; ring.rotation.set(Math.PI / 2, 0, 0); pod.add(ring);
+    });
+    // Unité arrière (D) avec fentes de ventilation
+    const back = part(new THREE.BoxGeometry(0.7, 0.42, 0.28), plateM, V(0, -0.32, -0.95), [0.25, 0, 0], [0, -0.2, -1.2]);
+    [-0.1, 0.02, 0.14].forEach((y) => { const s0 = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.04, 0.02), glowM); s0.position.set(0, y - 0.04, -0.15); back.add(s0); });
+    // Module central (E) : calculateur, visible en vue éclatée
+    const core = part(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 6), plateM, V(0, 0.15, -0.2), [Math.PI / 2, 0, 0], [0, 0, 0]);
+    const coreL = new THREE.Mesh(new THREE.CircleGeometry(0.11, 6), glowM); coreL.position.y = 0.065; coreL.rotation.x = -Math.PI / 2; core.add(coreL);
+    // Collier
+    part(new THREE.CylinderGeometry(0.72, 0.85, 0.28, 16, 1, true), plateM, V(0, -0.98, -0.05), [0, 0, 0], [0, -1, 0]);
+    // Rotation à la souris, vue éclatée au défilement
+    const drag = { on: false, x: 0, ry: -0.6, rx: 0.05, v: 0.004 };
+    cv.addEventListener('pointerdown', (e) => { drag.on = true; drag.x = e.clientX; drag.y = e.clientY; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', (e) => { if (!drag.on) return; drag.v = (e.clientX - drag.x) * 0.01; drag.ry += drag.v; drag.rx = clamp(drag.rx + (e.clientY - drag.y) * 0.006, -0.6, 0.6); drag.x = e.clientX; drag.y = e.clientY; });
+    cv.addEventListener('pointerup', () => { drag.on = false; });
+    const size = () => { const w = cv.clientWidth, h = cv.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    size(); window.addEventListener('resize', size);
+    let ex = 0;
+    visibleLoop(cv, () => {
+      if (!drag.on) { drag.v += (0.004 - drag.v) * 0.03; drag.ry += REDUCE ? 0 : drag.v; }
+      const r = cv.getBoundingClientRect(), target = clamp((innerHeight * 0.55 - r.top) / (r.height * 0.9), 0, 1);
+      ex += (target - ex) * 0.08;
+      parts.forEach((p) => p.position.copy(p.userData.base).addScaledVector(p.userData.dir, ex * 0.32));
+      root.rotation.set(drag.rx, drag.ry, 0);
+      renderer.render(scene, cam);
+    });
+  }
+
   // ---------- Lancement ----------
   const safe = (fn) => { try { const r = fn(); if (r && r.catch) r.catch((e) => console.error(e)); } catch (e) { console.error(e); } };
-  [hero, terrain, rover, psVisuals, pipeline, aiCompare, layersSection, routeSection, dashSection, chatSection, scrollFx].forEach(safe);
+  [hero, terrain, rover, helmet3d, psVisuals, pipeline, aiCompare, layersSection, routeSection, dashSection, chatSection, scrollFx].forEach(safe);
   // Les positions de déclenchement changent quand images et polices arrivent : on les recalcule.
   if (ST) { window.addEventListener('load', () => ST.refresh()); if (document.fonts) document.fonts.ready.then(() => ST.refresh()); }
 })();

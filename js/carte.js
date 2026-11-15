@@ -122,13 +122,13 @@
 
   // ---------- Vues (comme les fonds de carte de Google Maps) ----------
   const VIEWS = {
-    sat: { label: 'Satellite', thumb: tileUrl('hirise', '12/2155/7222') || tileUrl('viking', '7/67/225'),
+    sat: { label: 'Satellite', thumb: 'assets/zone/hirise.jpg',
       layers: [T('viking', { maxNativeZoom: 3 }), T('viking', { minZoom: 4, maxNativeZoom: 7, online: true }),
-        T('ctx', { minZoom: 5, maxNativeZoom: 12, bounds: GALE, online: true }), T('hirise', { minZoom: 10, maxNativeZoom: 15, bounds: STRIP, online: true })] },
-    relief: { label: 'Relief', thumb: tileUrl('relief', '7/67/225'),
+        T('ctx', { minZoom: 5, maxNativeZoom: 12, bounds: GALE, online: true, className: 'tint-mars' }), T('hirise', { minZoom: 10, maxNativeZoom: 15, bounds: STRIP, online: true, className: 'tint-mars' })] },
+    relief: { label: 'Relief', thumb: demImg,
       layers: [T('relief', { maxNativeZoom: 3 }), T('relief', { minZoom: 4, maxNativeZoom: 8, online: true }), L.imageOverlay(demImg, ZB, { className: 'smooth' })] },
-    therm: { label: 'Thermique', thumb: tileUrl('themis', '7/67/225'),
-      layers: [T('viking', { maxNativeZoom: 3, opacity: 0.5 }), T('themis', { minZoom: 4, maxNativeZoom: 9, bounds: L.latLngBounds([-65, -180], [65, 180]), online: true })] }
+    therm: { label: 'Thermique', thumb: 'assets/zone/themis-color.jpg',
+      layers: [T('viking', { maxNativeZoom: 3, opacity: 0.5 }), T('themis', { minZoom: 4, maxNativeZoom: 9, bounds: L.latLngBounds([-65, -180], [65, 180]), online: true }), L.imageOverlay('assets/zone/themis-color.jpg', ZB, { opacity: 0.92 })] }
   };
   Object.values(VIEWS).forEach((v) => { v.group = L.layerGroup(v.layers); });
   let view = 'sat';
@@ -264,8 +264,18 @@
   route.hit.on('click', () => openPanel('itineraire'));
   const profMk = L.circleMarker([0, 0], { pane: 'routePane', radius: 7, color: '#fff', weight: 2, fillColor: COL.mars, fillOpacity: 1, interactive: false });
   const stopLayer = L.layerGroup().addTo(map);
-  const meMarker = L.marker([stops[0].lat, stops[0].lon], { icon: L.divIcon({ className: '', html: '<div class="me"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 1000, keyboard: false })
-    .bindTooltip('Ma position · simulée', { direction: 'top', offset: [0, -10], className: 'tip' }).addTo(map);
+  const meMarker = L.marker([stops[0].lat, stops[0].lon], { draggable: true, icon: L.divIcon({ className: '', html: '<div class="me"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 1000, keyboard: false })
+    .bindTooltip('Ma position · glissez pour la recaler', { direction: 'top', offset: [0, -10], className: 'tip' }).addTo(map);
+  // Position recalée à la main (pas de GPS sur Mars : l'astronaute la corrige d'après un repère visuel)
+  let manualPos = null;
+  function setMyPos(lat, lon) {
+    if (!ZB.contains([lat, lon])) { toast('Position hors de la zone de sortie.'); meMarker.setLatLng(manualPos || meMarker.getLatLng()); return; }
+    if (sim.playing) simToggle();
+    manualPos = [lat, lon]; meMarker.setLatLng(manualPos);
+    const i = M.pointInfo(lon, lat);
+    toast('Position recalée : ' + nf(i.elev) + ' m, ' + i.className + '.');
+  }
+  meMarker.on('dragend', () => { const ll = meMarker.getLatLng(); setMyPos(ll.lat, ll.lng); });
 
   function stopLabel(i) { return i === 0 ? 'H' : String(i); }
   function drawStops() {
@@ -346,6 +356,8 @@
   }
   function placeMe() {
     const st = simState(), a = M.along(plan.safePts, st.d), [lon, lat] = M.toLL(a.x, a.y);
+    if (manualPos && !sim.playing) return { st, a, lat: manualPos[0], lon: manualPos[1] };
+    manualPos = null;
     meMarker.setLatLng([lat, lon]);
     sim.next = st.ph.type === 'walk' ? st.ph.to : st.ph.at;
     return { st, a, lat, lon };
@@ -422,7 +434,7 @@
   const EXPLAIN = {
     sat: () => ['La vue satellite assemble trois caméras en orbite : Viking pour toute la planète (232 m par pixel), CTX sur le cratère Gale (6 m) et HiRISE autour de la route de Curiosity (jusqu’à 0,3 m). Plus vous zoomez, plus l’image est fine.', ['viking', 'ctx', 'hirise']],
     relief: () => ['La vue relief colore l’altitude : bleu pour les creux, rouge et blanc pour les sommets (MOLA et HRSC). Dans la zone de sortie, le relief vient du modèle de terrain HiRISE : de ' + nf(M.eMin) + ' à ' + nf(M.eMax) + ' m.', ['mola', 'hrsc', 'dem']],
-    therm: () => ['La vue thermique montre la température du sol la nuit, mesurée par THEMIS. La roche garde la chaleur et paraît claire ; le sable et la poussière refroidissent vite et paraissent sombres. Clair : sol dur, marche facile. Sombre : sol meuble.', ['themis']],
+    therm: () => ['La vue thermique montre la température du sol la nuit, mesurée par THEMIS (fausses couleurs dans la zone de sortie). La roche garde la chaleur : jaune, sol dur, marche facile. Le sable refroidit vite : violet, sol meuble.', ['themis']],
     slope: () => ['La couche pentes est calculée sur le modèle de terrain HiRISE. Jaune : 10 à 15°. Orange : 15 à 20°. Rouge hachuré : plus de 20°, interdit à pied. Le modèle est précis à environ 18 m en altitude : les petits obstacles n’y figurent pas.', ['dem']],
     haz: () => ['Un modèle d’apprentissage non supervisé (k-moyennes) a classé chaque parcelle de 20 m d’après la luminosité et la texture de l’image HiRISE et la pente du relief. Il en sort cinq types de terrain ; trois sont des dangers : les dunes (où l’on s’enfonce), la roche rugueuse et les pentes raides. ' + M.HAZARDS.length + ' zones sont signalées, chacune avec un indice de confiance. Le trajet les contourne.', ['ai', 'hirise', 'dem']],
     life: () => ['Le potentiel de vie est un score simulé : il est fort là où se trouvent des minéraux formés avec de l’eau (argiles, hématite, d’après CRISM) et des affleurements de roche claire. Les ' + M.TARGETS.length + ' cibles proposées sont accessibles à pied et espacées d’au moins 500 m. À confirmer par les mesures au sol.', ['life', 'crism']],
@@ -544,9 +556,9 @@
       place('zone', 'Hématite et argiles', 'Cibles minérales (CRISM, contours approx.)', 'ov', ' data-k="min"') + '</div>';
   }
   function viewLegend(k) {
-    if (k === 'sat') return '<div class="swatches"><span>Image en lumière visible</span></div>';
+    if (k === 'sat') return '<div class="swatches"><span>Viking : couleurs réelles. CTX et HiRISE : noir et blanc, teinte martienne ajoutée</span></div>';
     if (k === 'relief') return '<div class="scale-bar" style="background:linear-gradient(90deg,rgb(32,52,120),rgb(40,140,160),rgb(120,180,90),rgb(220,170,70),rgb(250,240,230))"></div><div class="scale-lab"><span>' + nf(M.eMin) + ' m</span><span>zone de sortie</span><span>' + nf(M.eMax) + ' m</span></div>';
-    return '<div class="scale-bar" style="background:linear-gradient(90deg,#111,#888,#eee)"></div><div class="scale-lab"><span>froid · sable</span><span>chaud · roche</span></div>';
+    return '<div class="scale-bar" style="background:linear-gradient(90deg,#1a0b3b,#6b1d6e,#c93c3c,#ff8a2a,#ffe066)"></div><div class="scale-lab"><span>froid · sable</span><span>chaud · roche</span></div>';
   }
   const VIEW_SRC = { sat: 'Viking VIS · MRO CTX · MRO HiRISE', relief: 'MGS MOLA · Mars Express HRSC · MNT HiRISE', therm: 'Mars Odyssey THEMIS · infrarouge de nuit, 100 m/px' };
   function ovSection(title, keys) {
@@ -681,7 +693,7 @@
     const i = M.pointInfo(lng, lat);
     const html = '<div class="pop"><h4>' + (i.inside ? 'Point de la zone' : 'Hors zone de sortie') + '</h4><dl><dt>Position</dt><dd>' + fmtLL(lat, lng) + '</dd>' +
       (i.inside ? '<dt>Altitude</dt><dd>' + nf(i.elev) + ' m</dd><dt>Pente</dt><dd style="color:' + (i.slope > 20 ? COL.r : i.slope > 15 ? COL.o : COL.ink) + '">' + nf(i.slope) + '°' + (i.blocked ? ' · interdit' : '') + '</dd><dt>Terrain (IA)</dt><dd style="color:' + (i.cls === 1 || i.cls === 4 ? COL.o : COL.ink) + '">' + i.className + ' · ' + nf(i.conf * 100) + ' %</dd><dt>Potentiel de vie</dt><dd>' + nf(M.life[i.k] * 100) + ' % (simulé)</dd><dt>Unité</dt><dd>' + unitAt(i.x, i.y) + '</dd>' : '<dt>Données</dt><dd>imagerie seule</dd>') +
-      '</dl><div class="row">' + (i.inside ? '<button class="btn primary" data-pop="add">Ajouter un arrêt</button>' : '') + '<button class="btn" data-pop="ai">Synthèse IA</button></div></div>';
+      '</dl><div class="row">' + (i.inside ? '<button class="btn primary" data-pop="add">Ajouter un arrêt</button><button class="btn" data-pop="me">Je suis ici</button>' : '') + '<button class="btn" data-pop="ai">Synthèse IA</button></div></div>';
     L.popup({ maxWidth: 300 }).setLatLng(e.latlng).setContent(html).openOn(map);
   }
   map.on('popupopen', (e) => {
@@ -689,7 +701,8 @@
     el.addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-pop]'); if (!b || !lastClick) return;
       map.closePopup();
-      if (b.dataset.pop === 'add') addStop(lastClick[0], lastClick[1]);
+      if (b.dataset.pop === 'me') setMyPos(lastClick[0], lastClick[1]);
+      else if (b.dataset.pop === 'add') addStop(lastClick[0], lastClick[1]);
       else ask('Synthèse du point ' + fmtLL(lastClick[0], lastClick[1]), pointSummary(lastClick[0], lastClick[1]));
     });
   });
@@ -698,7 +711,7 @@
     const { lat, lng } = e.latlng, i = M.pointInfo(lng, lat);
     $('#coord').textContent = fmtLL(lat, lng) + (i.inside ? ' · ' + nf(i.elev) + ' m · pente ' + nf(i.slope) + '°' + ' · IA : ' + i.className + ' ' + nf(i.conf * 100) + ' %' : '');
   });
-  map.on('zoomend moveend', () => { updatePois(); updateSrc(); document.body.classList.toggle('map-z-low', map.getZoom() < 13); });
+  map.on('zoomend moveend', () => { updatePois(); updateSrc(); document.body.classList.toggle('map-z-low', map.getZoom() < 11.5); });
 
   // ---------- Événements de l'interface ----------
   function srcAction(a) {

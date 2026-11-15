@@ -348,3 +348,6 @@ kbd { display: inline-block; min-width: 18px; margin: 0 2px; padding: 1px 4px; b
 }
 .mode-casque .hz, .mode-casque .tg { display: none; }
 .map-z-low .tg, .map-z-low .leaflet-tooltip.stop-label { display: none; }
+.demo-btn { text-decoration: none; }
+.tint-mars, .views button[data-k=sat], .viewpick button[data-k=sat] span { filter: sepia(.9) saturate(2.1) hue-rotate(-18deg) brightness(.95); }
+.me { cursor: grab; }

@@ -23,6 +23,7 @@
     <a href="#casque">Casque</a>
     <a href="#donnees">Données</a>
   </nav>
+  <a class="btn btn-sm btn-ghost" href="casque.html">Vue casque</a>
   <a class="btn btn-sm" href="carte.html">Ouvrir la carte <span aria-hidden="true">→</span></a>
 </header>
 
@@ -263,51 +264,28 @@
 <!-- ============ 07 CASQUE ============ -->
 <section class="section" id="casque">
   <div class="wrap">
-    <header class="sec-head reveal"><span class="sec-num">07</span><span class="sec-name">Deux affichages</span></header>
+    <header class="sec-head reveal"><span class="sec-num">07</span><span class="sec-name">Le casque</span></header>
     <div class="info-head">
-      <h2 class="display reveal">Habitat &amp; casque</h2>
-      <div class="info-cols reveal">
-        <div><span class="mono">Habitat</span><p>Grand écran, avant et pendant la sortie : planifier, comparer, suivre.</p></div>
-        <div><span class="mono">Casque</span><p>Mains occupées, attention limitée : quatre éléments au plus, lisibles en un coup d'œil.</p></div>
-      </div>
+      <h2 class="display reveal">Le casque ARES</h2>
     </div>
-    <figure class="hud-fig reveal">
-      <svg viewBox="0 0 1000 520" class="hud" role="img" aria-labelledby="hudT">
-        <title id="hudT">Affichage tête haute du casque : cap vers l'arrêt 2, oxygène, alerte et une ligne de l'assistant</title>
-        <defs><linearGradient id="visor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity=".12"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient></defs>
-        <path class="visor" d="M170 120 Q500 30 830 120 Q900 260 830 400 Q500 470 170 400 Q100 260 170 120Z" fill="url(#visor)"/>
-        <g class="hud-el" transform="translate(600 235)">
-          <path d="M0 -62 L42 18 L0 0 L-42 18Z" class="hud-arrow"/>
-          <text y="62" class="hud-big" text-anchor="middle" id="hudDist">400 m</text>
-          <text y="88" class="hud-small" text-anchor="middle" id="hudNext">ARRÊT 2</text>
-        </g>
-        <g class="hud-el" transform="translate(215 180)">
-          <rect x="0" y="0" width="14" height="150" rx="3" class="hud-track"/>
-          <rect x="0" y="40" width="14" height="110" rx="3" class="hud-o2" id="hudO2Bar"/>
-          <text x="30" y="80" class="hud-mid" id="hudO2">O₂</text>
-          <text x="30" y="104" class="hud-small" id="hudRet">RETOUR AVANT 13:00</text>
-        </g>
-        <g class="hud-el" transform="translate(500 120)">
-          <rect x="-225" y="-26" width="450" height="40" rx="20" class="hud-alert"/>
-          <path d="M-204 2 L-192 -18 L-180 2Z" class="hud-alert-ico"/>
-          <text x="18" y="0" class="hud-alert-txt" text-anchor="middle" id="hudAlert">ALERTE</text>
-        </g>
-        <g class="hud-el" transform="translate(500 380)"><text class="hud-ai" text-anchor="middle" id="hudAi"></text></g>
-        <g class="callouts">
-          <path d="M650 232 L940 232"/><text x="912" y="220">01</text>
-          <path d="M210 255 L60 255"/><text x="60" y="243">02</text>
-          <path d="M727 108 L800 60 L940 60"/><text x="912" y="48">03</text>
-          <path d="M800 372 L870 480 L940 480"/><text x="912" y="468">04</text>
-        </g>
-      </svg>
-      <figcaption class="chip-sim">Simulé</figcaption>
-    </figure>
-    <ol class="hud-legend reveal">
-      <li><span>01</span><b>Cap et distance</b><small>Flèche vers le prochain arrêt</small></li>
-      <li><span>02</span><b>Oxygène</b><small>Jauge et heure limite de retour</small></li>
-      <li><span>03</span><b>Alerte</b><small>Danger détecté par l'IA, devant vous</small></li>
-      <li><span>04</span><b>Assistant</b><small>Une seule ligne, en gros caractères</small></li>
-    </ol>
+    <div class="helmet">
+      <figure class="helmet-fig helmet-img reveal">
+        <img src="assets/casque/planche.jpg" alt="Planche technique du casque ARES : vues de face, de profil, de dos, de dessus et vue éclatée">
+        <span class="hp" style="left:15.6%;top:13.8%"><i>A</i></span>
+        <span class="hp" style="left:49.6%;top:17.5%"><i>B</i></span>
+        <span class="hp" style="left:12%;top:32%"><i>C</i></span>
+        <span class="hp" style="left:68.5%;top:29.5%"><i>D</i></span>
+        <span class="hp" style="left:52%;top:72%"><i>E</i></span>
+      </figure>
+      <ol class="helmet-list reveal">
+        <li><i>A</i><div><b>Capteur frontal</b><p>Caméra stéréo et lidar : l'IA voit le terrain devant l'astronaute et repère les obstacles en temps réel.</p></div></li>
+        <li><i>B</i><div><b>Modules latéraux</b><p>Centrale inertielle et caméras : la position est suivie sans GPS, recalée sur les images d'orbite.</p></div></li>
+        <li><i>C</i><div><b>Visière tête haute</b><p>Le trajet sûr, les dangers et les cibles s'affichent sur le terrain réel, en réalité augmentée.</p></div></li>
+        <li><i>D</i><div><b>Unité arrière</b><p>Ventilation, recyclage du CO₂ et réserve d'énergie, surveillés en continu.</p></div></li>
+        <li><i>E</i><div><b>Module central</b><p>Calculateur de bord du copilote IA : détection, trajet et réponses sans connexion à la Terre.</p></div></li>
+      </ol>
+    </div>
+    <a class="btn btn-lg helmet-cta" href="casque.html">Entrer dans le casque <span aria-hidden="true">→</span></a>
   </div>
 </section>
 
@@ -315,10 +293,6 @@
 <section class="section" id="assistant">
   <div class="wrap">
     <header class="sec-head reveal"><span class="sec-num">08</span><span class="sec-name">L'assistant IA</span></header>
-    <div class="split">
-      <h2 class="h2 reveal">Il explique. Il ne calcule pas.<br><em>Il n'invente pas.</em></h2>
-      <p class="lead reveal">L'application calcule les faits : trajet, dangers, autonomie. L'assistant les met en mots et cite la mission d'origine. S'il n'a pas l'information, il le dit.</p>
-    </div>
     <div class="ai-grid">
       <div class="panel chat reveal" id="chat">
         <div class="panel-bar"><span class="mono">[ Assistant · mode habitat ]</span><span class="chip-ai">Hors ligne</span></div>

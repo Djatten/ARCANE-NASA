@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARES NAV — Vue casque</title>
+<meta name="theme-color" content="#050505">
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="css/casque.css">
+</head>
+<body>
+<canvas id="world" aria-label="Vue de l'astronaute sur le terrain réel du cratère Gale"></canvas>
+
+<!-- Repères en réalité augmentée, projetés sur le terrain -->
+<div id="ar" aria-hidden="true"></div>
+
+<!-- Visière, d'après la planche technique -->
+<svg class="visor" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+  <defs>
+    <mask id="cut">
+      <rect width="1600" height="900" fill="#fff"/>
+      <path d="M150 210 Q800 40 1450 210 L1520 470 Q1480 640 1300 720 L1020 760 L940 860 L660 860 L580 760 L300 720 Q120 640 80 470 Z" fill="#000"/>
+    </mask>
+    <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151515"/><stop offset="1" stop-color="#050505"/></linearGradient>
+    <radialGradient id="glare" cx=".3" cy=".15" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#shell)" mask="url(#cut)"/>
+  <path class="rim" d="M150 210 Q800 40 1450 210 L1520 470 Q1480 640 1300 720 L1020 760 L940 860 L660 860 L580 760 L300 720 Q120 640 80 470 Z"/>
+  <path class="rim2" d="M175 228 Q800 66 1425 228 L1490 468 Q1452 622 1288 698 L1008 738 L930 836 L670 836 L592 738 L312 698 Q148 622 110 468 Z"/>
+  <path d="M150 210 Q800 40 1450 210 L1520 470 Q1480 640 1300 720 L1020 760 L940 860 L660 860 L580 760 L300 720 Q120 640 80 470 Z" fill="url(#glare)"/>
+  <!-- capteur frontal et modules latéraux (vus de l'intérieur) -->
+  <g class="pod"><circle cx="800" cy="70" r="26"/><circle cx="800" cy="70" r="12"/></g>
+  <g class="pod"><circle cx="40" cy="380" r="30"/><circle cx="40" cy="380" r="13"/></g>
+  <g class="pod"><circle cx="1560" cy="380" r="30"/><circle cx="1560" cy="380" r="13"/></g>
+</svg>
+
+<!-- Affichage tête haute -->
+<div class="hud" id="hud">
+  <div class="compass"><div class="tape" id="tape"></div><i class="needle"></i><b id="hdg">000°</b></div>
+
+  <div class="gauge g-left">
+    <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="trk"/><circle cx="60" cy="60" r="50" class="val" id="o2Arc" pathLength="100"/></svg>
+    <div class="g-txt"><span>O₂</span><b id="o2">100 %</b><small id="o2t">—</small></div>
+  </div>
+  <div class="gauge g-right">
+    <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="trk"/><circle cx="60" cy="60" r="50" class="val en" id="enArc" pathLength="100"/></svg>
+    <div class="g-txt"><span>Énergie</span><b id="en">100 %</b><small id="ent">—</small></div>
+  </div>
+
+  <ul class="vitals" id="vitals"></ul>
+  <ul class="env" id="env"></ul>
+
+  <div class="next" id="next"><span id="nextLbl">—</span><b id="nextDist">—</b><small id="nextEta">—</small></div>
+  <div class="alert" id="alert" hidden></div>
+
+  <div class="radar"><canvas id="radar" width="220" height="220"></canvas><span>N</span></div>
+
+  <div class="copilot" id="copilot">
+    <i class="dot"></i><span class="who">ARES · copilote IA</span>
+    <p id="ai">Initialisation…</p>
+  </div>
+  <div class="scan" id="scan"><i></i>Vision IA <b id="scanN">0</b> détections</div>
+</div>
+
+<!-- Commandes de la simulation (hors visière) -->
+<nav class="ctl" aria-label="Simulation">
+  <a href="index.html" class="brand" title="Page de présentation"><span class="logo" aria-hidden="true"></span>ARES NAV</a>
+  <button type="button" id="play">❚❚</button>
+  <div class="speed" role="group" aria-label="Vitesse">
+    <button type="button" data-x="10">×10</button><button type="button" data-x="30" class="on">×30</button><button type="button" data-x="90">×90</button>
+  </div>
+  <button type="button" id="vision" class="on" title="Touche V">Vision IA</button>
+  <button type="button" data-q="danger">Danger devant ?</button>
+  <button type="button" data-q="o2">Mes réserves ?</button>
+  <button type="button" data-q="where">Où suis-je ?</button>
+  <span class="clock" id="clock">09:00</span>
+  <span class="sim">Simulé · terrain réel HiRISE</span>
+</nav>
+
+<script src="vendor/three.min.js"></script>
+<script src="data/zone.js"></script>
+<script src="js/zone-model.js"></script>
+<script src="assets/casque/terrain-data.js"></script>
+<script src="assets/nasa-data.js"></script>
+<script src="js/casque.js"></script>
+</body>
+</html>
