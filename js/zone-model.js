@@ -5,8 +5,8 @@
   const Z = root.ARES_ZONE;
   if (!Z) { console.error('data/zone.js manquant : lancer tools/build_data.py'); return; }
 
-  // Hypothèses de l'équipe (cahier des charges §2), pas des chiffres NASA.
-  const HYP = { crew: 2, speedKmh: 2, maxSlope: 20, budgetMin: 240, stopMin: 15, departMin: 9 * 60, sandCost: 4 };
+  // Hypothèses de démonstration, pas des chiffres NASA. La réserve électrique reste à calibrer.
+  const HYP = { crew: 2, speedKmh: 2, maxSlope: 20, budgetMin: 240, powerBudgetMin: 300, stopMin: 15, departMin: 9 * 60, sandCost: 4 };
 
   const [LON0, LAT0, LON1, LAT1] = Z.bounds;
   const NX = Z.nx, NY = Z.ny, C = Z.cell, N = NX * NY;

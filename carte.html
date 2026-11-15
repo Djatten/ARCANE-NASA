@@ -67,9 +67,23 @@
     <div class="hud-dist" id="hudDist">—</div>
     <div class="hud-next" id="hudNext">—</div>
   </div>
-  <div class="hud-o2"><div class="hud-o2-bar"><i id="hudO2Fill"></i></div><b id="hudO2">—</b><span id="hudRet">—</span></div>
+  <div class="hud-resources" aria-label="Ressources de la combinaison, valeurs simulées">
+    <div class="hud-resource">
+      <div class="hud-resource-head"><b id="hudO2">O₂ —</b><span id="hudRet">—</span></div>
+      <div class="hud-resource-track" id="hudO2Track" role="meter" aria-label="Oxygène restant" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="hudO2Fill"></i></div>
+    </div>
+    <div class="hud-resource">
+      <div class="hud-resource-head"><b id="hudPower">ÉNERGIE —</b><span id="hudPowerTime">—</span></div>
+      <div class="hud-resource-track" id="hudPowerTrack" role="meter" aria-label="Énergie restante" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="hudPowerFill"></i></div>
+    </div>
+  </div>
   <p class="hud-ai" id="hudAi"></p>
-  <div class="hud-sim"><button type="button" id="simPlay">▶ Démarrer la sortie</button><span id="simClock">09:00</span><span class="chip sim">Simulé</span></div>
+  <div class="hud-sim">
+    <button type="button" id="simPlay">▶ Démarrer la sortie</button>
+    <button type="button" id="hudSpeak" title="Lecture vocale de démonstration par le navigateur">♫ Écouter le copilote</button>
+    <span id="simClock">09:00</span>
+    <span class="chip sim" title="Position et alertes rejouées sur les données de terrain, sans caméra en direct">Simulé · MNT</span>
+  </div>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
