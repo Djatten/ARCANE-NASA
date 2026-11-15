@@ -5,9 +5,14 @@ La carte qu'un astronaute consulte pour préparer et réussir une sortie à pied
 avec un assistant qui explique les données NASA en langage clair.
 
 ## Lancer
-Double-cliquez sur `index.html` (Chrome, Edge ou Firefox). Aucune installation, aucun serveur, aucune connexion.
+Depuis la racine du dépôt, lancez `python -m http.server 8000`, puis ouvrez `http://localhost:8000/`.
+N'ouvrez pas les pages directement en `file://` : la carte et ses ressources locales doivent être servies en HTTP.
 - `index.html` : page de présentation.
 - `carte.html` : la carte (bouton « Préparer la sortie »).
+
+## Déployer sur Render
+Dans Render, choisissez **New > Blueprint**, connectez `Djatten/ARCANE-NASA` et la branche `feature/briefing-jezero`.
+Render lit `render.yaml` pour publier le site statique ; après le premier déploiement, ouvrez `/carte.html` sur l'URL `onrender.com` créée.
 
 ## La zone de sortie
 Cratère Gale, au pied du mont Sharp, entre les dunes Bagnold et la crête Vera Rubin

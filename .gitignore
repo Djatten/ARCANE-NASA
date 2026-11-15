@@ -8,3 +8,4 @@ __pycache__/
 Thumbs.db
 # Doublon : la page charge assets/models/rover-data.js
 assets/models/curiosity-light.glb
+/public/
